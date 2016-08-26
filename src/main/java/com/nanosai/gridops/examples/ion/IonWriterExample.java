@@ -14,10 +14,12 @@ public class IonWriterExample {
 
         ionWriter.setDestination(destination, destOffset);
 
+        //write 3 ION fields into the byte array
         ionWriter.writeUtf8("A UTF-8 field");
         ionWriter.writeInt64(123456);
         ionWriter.writeBytes(new byte[]{ 12, 11, 122, 1, 27});
 
+        //obtain length of written ION data
         int dataLength = ionWriter.destIndex;
 
         System.out.println("Total length of ION data: " + dataLength);
