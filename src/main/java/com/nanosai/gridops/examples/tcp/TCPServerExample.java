@@ -1,0 +1,57 @@
+package com.nanosai.gridops.examples.tcp;
+
+import com.nanosai.gridops.GridOps;
+import com.nanosai.gridops.mem.MemoryBlock;
+import com.nanosai.gridops.tcp.IAPMessageReaderFactory;
+import com.nanosai.gridops.tcp.TCPMessage;
+import com.nanosai.gridops.tcp.TCPServer;
+import com.nanosai.gridops.tcp.TCPSocketsProxy;
+
+import java.io.IOException;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+
+/**
+ * Created by jjenkov on 26-08-2016.
+ */
+public class TCPServerExample {
+
+    public static void main(String[] args) throws IOException {
+
+        TCPServer tcpServer1 = GridOps.tcpServerBuilder().buildAndStart();
+
+        final TCPSocketsProxy socketsProxy =
+                GridOps.tcpSocketsProxyBuilder().newSocketsQueue(tcpServer1.getSocketQueue()).build();
+
+        MemoryBlock[] requests  = new MemoryBlock[1024];
+
+
+        while(true){
+            try {
+                socketsProxy.checkForNewInboundSockets();
+
+                //process inbound messages.
+                int requestCount = socketsProxy.read(requests);
+                for(int i=0; i < requestCount; i++){
+                    TCPMessage request = (TCPMessage) requests[i];
+
+                    TCPMessage response = socketsProxy.allocateWriteMemoryBlock(1024);
+                    response.copyFrom(request);
+
+                    response.tcpSocket   = request.tcpSocket;
+
+                    socketsProxy.enqueue(response);
+                }
+
+                socketsProxy.writeToSockets();
+
+            } catch(IOException e){
+                e.printStackTrace();
+            }
+
+            //circuit.addProcessor(new MonolithComponent());
+        }
+
+
+    }
+}
