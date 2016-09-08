@@ -26,14 +26,18 @@ public class TCPServerExample {
         MemoryBlock[] requests  = new MemoryBlock[1024];
 
 
+        System.out.println("Server started");
+
         while(true){
             try {
-                socketsProxy.checkForNewInboundSockets();
+                socketsProxy.drainSocketQueue();
 
                 //process inbound messages.
                 int requestCount = socketsProxy.read(requests);
                 for(int i=0; i < requestCount; i++){
                     TCPMessage request = (TCPMessage) requests[i];
+
+                    System.out.println("Processing message");
 
                     TCPMessage response = socketsProxy.allocateWriteMemoryBlock(1024);
                     response.copyFrom(request);
@@ -44,6 +48,13 @@ public class TCPServerExample {
                 }
 
                 socketsProxy.writeToSockets();
+
+
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
 
             } catch(IOException e){
                 e.printStackTrace();
