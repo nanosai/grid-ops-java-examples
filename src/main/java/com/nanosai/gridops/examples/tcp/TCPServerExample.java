@@ -18,10 +18,12 @@ public class TCPServerExample {
 
     public static void main(String[] args) throws IOException {
 
+        //baseExamples();
+
         TCPServer tcpServer1 = GridOps.tcpServerBuilder().buildAndStart();
 
         final TCPSocketsProxy socketsProxy =
-                GridOps.tcpSocketsProxyBuilder().newSocketsQueue(tcpServer1.getSocketQueue()).build();
+                GridOps.tcpSocketsProxyBuilder().tcpServer(tcpServer1).build();
 
         MemoryBlock[] requests  = new MemoryBlock[1024];
 
@@ -65,4 +67,11 @@ public class TCPServerExample {
 
 
     }
+
+    private static void baseExamples() {
+        TCPServer tcpServer  = GridOps.tcpServerBuilder().tcpPort(1111).build();
+        new Thread(tcpServer).start();
+    }
+
+
 }
