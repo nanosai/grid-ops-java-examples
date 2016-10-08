@@ -2,31 +2,29 @@ package com.nanosai.gridops.examples.tcp;
 
 import com.nanosai.gridops.GridOps;
 import com.nanosai.gridops.ion.write.IonWriter;
-import com.nanosai.gridops.tcp.TCPMessage;
-import com.nanosai.gridops.tcp.TCPSocket;
-import com.nanosai.gridops.tcp.TCPSocketsProxy;
+import com.nanosai.gridops.tcp.TcpMessage;
+import com.nanosai.gridops.tcp.TcpSocket;
+import com.nanosai.gridops.tcp.TcpSocketsPort;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.SocketChannel;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 
 /**
  * Created by jjenkov on 03-09-2016.
  */
-public class TCPClientExample {
+public class TcpClientExample {
 
     public static void main(String[] args) throws IOException {
 
         SocketChannel socketChannel  = SocketChannel.open(new InetSocketAddress("localhost", 1111));
 
-        final TCPSocketsProxy socketsProxy = GridOps.tcpSocketsProxyBuilder().build();
+        final TcpSocketsPort socketsPort = GridOps.tcpSocketsPortBuilder().build();
 
-        TCPSocket tcpSocket = socketsProxy.addInboundSocket(socketChannel);
+        TcpSocket tcpSocket = socketsPort.addSocket(socketChannel);
 
 
-        TCPMessage request = socketsProxy.allocateWriteMemoryBlock(1024);
+        TcpMessage request = socketsPort.allocateWriteMemoryBlock(1024);
 
         IonWriter ionWriter = new IonWriter();
 
@@ -50,11 +48,11 @@ public class TCPClientExample {
         //todo missing what socket the message should be sent to. Must be a TCPSocket - not a SocketChannel.
         request.tcpSocket = tcpSocket;
 
-        socketsProxy.enqueue(request);
+        socketsPort.enqueue(request);
 
         // make sure all written messages are flushed out - although a single call to writeToSockets()
         // does not guarantee that.
-        socketsProxy.writeToSockets();
+        socketsPort.writeToSockets();
 
 
 
