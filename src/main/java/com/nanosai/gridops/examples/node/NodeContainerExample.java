@@ -15,7 +15,6 @@ public class NodeContainerExample {
 
     public static void main(String[] args) {
 
-
         byte[] messageId = new byte[]{11};
         MessageReactor messageReactor = new MessageReactor(messageId) {
             @Override
