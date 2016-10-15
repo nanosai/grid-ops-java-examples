@@ -15,6 +15,10 @@ public class IapMessageWriterExample {
         byte[] messageBytes = new byte[128];
         IonWriter writer = GridOps.ionWriter(messageBytes, 0);
 
+        writer.setComplexFieldStack(new int[8]); // allow 8 levels of nested complex ION fields.
+
+        writer.writeObjectBeginPush(1);
+
         byte[] receiverNodeId = new byte[]{123};
         IapMessageWriter.writeReceiverNodeId(writer, receiverNodeId);
 
@@ -26,6 +30,8 @@ public class IapMessageWriterExample {
 
         byte[] messageType = new byte[]{11};
         IapMessageWriter.writeMessageType(writer, messageType);
+
+        writer.writeObjectEndPop();
 
     }
 }
