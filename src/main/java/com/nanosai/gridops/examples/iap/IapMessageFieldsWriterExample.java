@@ -1,14 +1,13 @@
 package com.nanosai.gridops.examples.iap;
 
 import com.nanosai.gridops.GridOps;
-import com.nanosai.gridops.iap.IapMessageReader;
-import com.nanosai.gridops.iap.IapMessageWriter;
+import com.nanosai.gridops.iap.IapMessageFieldsWriter;
 import com.nanosai.gridops.ion.write.IonWriter;
 
 /**
  * Created by jjenkov on 15-10-2016.
  */
-public class IapMessageWriterExample {
+public class IapMessageFieldsWriterExample {
 
 
     public static void main(String[] args) {
@@ -20,16 +19,16 @@ public class IapMessageWriterExample {
         writer.writeObjectBeginPush(1);
 
         byte[] receiverNodeId = new byte[]{123};
-        IapMessageWriter.writeReceiverNodeId(writer, receiverNodeId);
+        IapMessageFieldsWriter.writeReceiverNodeId(writer, receiverNodeId);
 
         byte[] protocolId = new byte[]{99};
-        IapMessageWriter.writeSemanticProtocolId(writer, protocolId);
+        IapMessageFieldsWriter.writeSemanticProtocolId(writer, protocolId);
 
         byte[] protocolVersion = new byte[] {1};
-        IapMessageWriter.writeSemanticProtocolVersion(writer, protocolVersion);
+        IapMessageFieldsWriter.writeSemanticProtocolVersion(writer, protocolVersion);
 
         byte[] messageType = new byte[]{11};
-        IapMessageWriter.writeMessageType(writer, messageType);
+        IapMessageFieldsWriter.writeMessageType(writer, messageType);
 
         writer.writeObjectEndPop();
 
