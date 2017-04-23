@@ -19,12 +19,12 @@ public class TcpClientExample {
 
         SocketChannel socketChannel  = SocketChannel.open(new InetSocketAddress("localhost", 1111));
 
-        final TcpMessagePort socketsPort = GridOps.tcpMessagePortBuilder().build();
+        final TcpMessagePort messagePort = GridOps.tcpMessagePortBuilder().build();
 
-        TcpSocket tcpSocket = socketsPort.addSocket(socketChannel);
+        TcpSocket tcpSocket = messagePort.addSocket(socketChannel);
 
 
-        TcpMessage request = socketsPort.allocateWriteMemoryBlock(1024);
+        TcpMessage request = messagePort.allocateWriteMemoryBlock(1024);
 
         IonWriter ionWriter = new IonWriter();
 
@@ -48,11 +48,11 @@ public class TcpClientExample {
         //todo missing what socket the message should be sent to. Must be a TCPSocket - not a SocketChannel.
         request.tcpSocket = tcpSocket;
 
-        socketsPort.writeNowOrEnqueue(request);
+        messagePort.writeNowOrEnqueue(request);
 
         // make sure all written messages are flushed out - although a single call to writeToSockets()
         // does not guarantee that.
-        socketsPort.writeNow();
+        messagePort.writeNow();
 
 
 
