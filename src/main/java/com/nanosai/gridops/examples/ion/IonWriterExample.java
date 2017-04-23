@@ -20,7 +20,7 @@ public class IonWriterExample {
         ionWriter.writeBytes(new byte[]{ 12, 11, 122, 1, 27});
 
         //obtain length of written ION data
-        int dataLength = ionWriter.destIndex;
+        int dataLength = ionWriter.index;
 
         System.out.println("Total length of ION data: " + dataLength);
 

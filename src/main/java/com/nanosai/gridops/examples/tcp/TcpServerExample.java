@@ -2,9 +2,10 @@ package com.nanosai.gridops.examples.tcp;
 
 import com.nanosai.gridops.GridOps;
 import com.nanosai.gridops.mem.MemoryBlock;
+import com.nanosai.gridops.mem.MemoryBlockBatch;
 import com.nanosai.gridops.tcp.TcpMessage;
 import com.nanosai.gridops.tcp.TcpServer;
-import com.nanosai.gridops.tcp.TcpSocketsPort;
+import com.nanosai.gridops.tcp.TcpMessagePort;
 
 import java.io.IOException;
 
@@ -19,34 +20,33 @@ public class TcpServerExample {
 
         TcpServer tcpServer1 = GridOps.tcpServerBuilder().buildAndStart();
 
-        final TcpSocketsPort socketsProxy =
-                GridOps.tcpSocketsPortBuilder().tcpServer(tcpServer1).build();
+        final TcpMessagePort tcpMessagePort =
+                GridOps.tcpMessagePortBuilder().tcpServer(tcpServer1).build();
 
-        MemoryBlock[] requests  = new MemoryBlock[1024];
-
+        MemoryBlockBatch memoryBlockBatch = new MemoryBlockBatch(1024);
 
         System.out.println("Server started");
 
         while(true){
             try {
-                socketsProxy.addSocketsFromSocketQueue();
+                tcpMessagePort.addSocketsFromSocketQueue();
 
                 //process inbound messages.
-                int requestCount = socketsProxy.read(requests);
+                int requestCount = tcpMessagePort.readNow(memoryBlockBatch);
                 for(int i=0; i < requestCount; i++){
-                    TcpMessage request = (TcpMessage) requests[i];
+                    TcpMessage request = (TcpMessage) memoryBlockBatch.blocks[i];
 
                     System.out.println("Processing message");
 
-                    TcpMessage response = socketsProxy.allocateWriteMemoryBlock(1024);
+                    TcpMessage response = tcpMessagePort.allocateWriteMemoryBlock(1024);
                     response.copyFrom(request);
 
                     response.tcpSocket   = request.tcpSocket;
 
-                    socketsProxy.enqueue(response);
+                    tcpMessagePort.writeNowOrEnqueue(response);
                 }
 
-                socketsProxy.writeToSockets();
+                tcpMessagePort.writeNow();
 
 
                 try {
